@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section name="Workbench">
+	<section name="org.eclipse.ui.texteditor.FindReplaceDialog_dialogBounds">
+		<item value="257" key="DIALOG_WIDTH"/>
+		<item value="291" key="DIALOG_Y_ORIGIN"/>
+		<item value="70" key="DIALOG_X_ORIGIN"/>
+		<item value="380" key="DIALOG_HEIGHT"/>
+		<item value="1|Segoe UI|9.0|0|WINDOWS|1|-12|0|0|0|400|0|0|0|1|0|0|0|0|Segoe UI" key="DIALOG_FONT_NAME"/>
+	</section>
+	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
+		<item value="true" key="wrap"/>
+		<item value="false" key="casesensitive"/>
+		<item value="false" key="isRegEx"/>
+		<item value="false" key="incremental"/>
+		<item value="false" key="wholeword"/>
+		<item value="Random gen = new Random(System.currentTimeMillis());" key="selection"/>
+		<list key="findhistory">
+			<item value="Random gen = new Random(System.currentTimeMillis());"/>
+			<item value="player.getSpeed()*delta"/>
+			<item value="512"/>
+			<item value="880"/>
+			<item value="translate_y"/>
+			<item value="translate_x"/>
+			<item value="my"/>
+			<item value="mx"/>
+		</list>
+		<list key="replacehistory">
+			<item value=""/>
+			<item value="speed"/>
+			<item value="HEIGHT"/>
+			<item value="WIDTH"/>
+			<item value="(int) translate_y"/>
+			<item value="(int) translate_x"/>
+			<item value="translate_y"/>
+			<item value="translate_x"/>
+		</list>
+	</section>
+</section>

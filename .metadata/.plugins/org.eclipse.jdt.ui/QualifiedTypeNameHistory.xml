@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<qualifiedTypeNameHistroy>
+<fullyQualifiedTypeName name="java.text.DecimalFormat"/>
+<fullyQualifiedTypeName name="org.newdawn.slick.SlickException"/>
+<fullyQualifiedTypeName name="org.newdawn.slick.Color"/>
+<fullyQualifiedTypeName name="org.newdawn.slick.Font"/>
+<fullyQualifiedTypeName name="java.awt.Font"/>
+<fullyQualifiedTypeName name="org.newdawn.slick.opengl.TextureLoader"/>
+<fullyQualifiedTypeName name="java.io.FileNotFoundException"/>
+<fullyQualifiedTypeName name="md.mclama.GameCo.Entities.Entity"/>
+<fullyQualifiedTypeName name="java.io.FileInputStream"/>
+<fullyQualifiedTypeName name="java.io.File"/>
+<fullyQualifiedTypeName name="md.mclama.GameCo.Entities.Player"/>
+<fullyQualifiedTypeName name="java.util.ArrayList"/>
+<fullyQualifiedTypeName name="java.util.List"/>
+<fullyQualifiedTypeName name="java.util.Random"/>
+<fullyQualifiedTypeName name="md.mclama.GameCo.Entities.Resources.WoodPile"/>
+<fullyQualifiedTypeName name="md.mclama.GameCo.GameCo"/>
+<fullyQualifiedTypeName name="md.mclama.GameCo.Entities.Resources.Stones"/>
+<fullyQualifiedTypeName name="md.mclama.GameCo.Entities.Resources.Boulder"/>
+<fullyQualifiedTypeName name="org.newdawn.slick.opengl.Texture"/>
+<fullyQualifiedTypeName name="md.mclama.GameCo.Entities.Resources.Tree"/>
+<fullyQualifiedTypeName name="java.io.IOException"/>
+<fullyQualifiedTypeName name="org.newdawn.slick.openal.Audio"/>
+<fullyQualifiedTypeName name="org.newdawn.slick.openal.AudioLoader"/>
+<fullyQualifiedTypeName name="org.newdawn.slick.util.ResourceLoader"/>
+<fullyQualifiedTypeName name="org.newdawn.slick.openal.SoundStore"/>
+<fullyQualifiedTypeName name="org.lwjgl.openal.AL"/>
+<fullyQualifiedTypeName name="md.mclama.GameCo.Entities.Buildings.Buildings"/>
+<fullyQualifiedTypeName name="java.awt.Color"/>
+</qualifiedTypeNameHistroy>

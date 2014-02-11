@@ -1,4 +1,0 @@
-GameCo
-======
-
-Placeholder name

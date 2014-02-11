@@ -1,0 +1,40 @@
+package md.mclama.GameCo.Entities.Buildings;
+
+public enum Buildings {
+	WOODWALLH("wall_h", 16, 8, 16, 8),
+	WOODWALLV("wall_v", 16, 8, 16, 8);
+	
+	private final String tex;
+	private final int hitx;
+	private final int hity;
+	private final int imgx;
+	private final int imgy;
+	
+	private Buildings(String texture, int hitx, int hity, int imgx, int imgy){
+		tex = texture;
+		this.hitx = hitx;
+		this.hity = hity;
+		this.imgx = imgx;
+		this.imgy = imgy;
+	}
+	
+	public String getTex(){
+		return tex;
+	}
+
+	public int getHitx() {
+		return hitx;
+	}
+
+	public int getHity() {
+		return hity;
+	}
+
+	public int getImgx() {
+		return imgx;
+	}
+
+	public int getImgy() {
+		return imgy;
+	}
+}
