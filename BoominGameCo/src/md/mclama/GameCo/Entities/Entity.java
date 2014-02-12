@@ -1,5 +1,6 @@
 package md.mclama.GameCo.Entities;
 
+import java.awt.Rectangle;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -34,6 +35,8 @@ public abstract class Entity {
 	protected Texture texture;
 	public long lifetime=1;
 	
+	public Rectangle hitbox = new Rectangle();
+	
 	public Entity(float x, float y, String tex, int displayx, int displayy, int hitx, int hity, int health, int size){
 		this.x=x;
 		this.y=y;
@@ -46,6 +49,13 @@ public abstract class Entity {
 		maxHp = health;
 		this.size = size;
 		//System.out.println(imgw + "," + imgh);
+		
+		hitbox.x = (int) x;
+		hitbox.y = (int) y;
+		hitbox.width = hitx;
+		hitbox.height = hity;
+		
+		
 	}
 	
 	public void tick(){
@@ -81,6 +91,7 @@ public abstract class Entity {
 		if(xc >= exl+1 && xc <= exr-1 && yd >= eyu+1 && yd <= eyd-1) return true;//BOT
 		if(xl >= exl+1 && xl <= exr-1 && yc >= eyu+1 && yc <= eyd-1) return true;//left
 		if(xr >= exl+1 && xr <= exr-1 && yc >= eyu+1 && yc <= eyd-1) return true;//right
+		
 		return false;
 	}
 
@@ -98,11 +109,11 @@ public abstract class Entity {
 			glTexCoord2f(0,0);
 			glVertex2f(x,y);
 			glTexCoord2f(0.98f,0);
-			glVertex2f(x+texture.getImageWidth(),y);
+			glVertex2f(x+texture.getTextureWidth(),y);
 			glTexCoord2f(1,1);
-			glVertex2f(x+texture.getImageWidth(),y+texture.getImageHeight());
+			glVertex2f(x+texture.getTextureWidth(),y+texture.getTextureHeight());
 			glTexCoord2f(0,1);
-			glVertex2f(x,y+texture.getImageHeight());
+			glVertex2f(x,y+texture.getTextureHeight());
 		glEnd();
 		
 //		glColor3f(1,0,0);       //test the center

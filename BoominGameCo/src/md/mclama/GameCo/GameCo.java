@@ -91,6 +91,9 @@ public class GameCo {
 	
 	private long seconds=0;
 	
+	public Window wind;
+	protected Console console = new Console();
+	
 	public GameCo(){ //My initialization code
 		initGL();
 		initFont();
@@ -118,6 +121,7 @@ public class GameCo {
 		
 		BackgroundTex = loadTexture("grass");
 				
+		wind = new Window(50100, 50100, 800, 600, this);
 		
 		gameLoop();
 	}
@@ -268,6 +272,11 @@ public class GameCo {
 			}
 		}
 		
+		if (Keyboard.isKeyDown(Keyboard.KEY_END)) {
+			console.show=true;
+		}
+		else console.show=false;
+		
 		if (Keyboard.isKeyDown(Keyboard.KEY_COMMA)) {
 			timescale-=0.005;
 			if(timescale <= 0.006f) timescale = 0.006f;
@@ -351,6 +360,7 @@ public class GameCo {
 				//for(int i=0; i<2000; i++){
 				//	Entitys.add(new WoodPile(mx,my, "WoodPile"));
 				//}
+				console.addLog("Spawned tree at " + mx + "," + my + ".");
 			}
 			if(Mouse.isButtonDown(0)){ //left click
 				translate_x += Mouse.getDX();
@@ -498,6 +508,8 @@ public class GameCo {
 //		glRecti(864,0, 880, HEIGHT);
 //		glRecti(XOFFSET,0, 880, 16);
 //		glRecti(XOFFSET, 496, 880, 512);
+		
+		
 	      	
 		for(int xx = -1; xx<(WIDTH/16)+2; xx++){//57,34
 			for(int yy = -1; yy<(HEIGHT/16)+2; yy++){
@@ -586,7 +598,11 @@ public class GameCo {
 			glColor4f(1,1,1,1); //Visible
 		}
 		
-		glPopMatrix();     
+		wind.render(translate_x, translate_y);
+		
+		glPopMatrix();  
+		
+		
 		glEnable(GL_TEXTURE_2D);
 		//on-screen text 
 		
@@ -602,6 +618,12 @@ public class GameCo {
 		font.drawString(0, yoff, "Entities: " + Entitys.size() + " On Screen: " + ents_on_screen, Color.cyan);
 		font.drawString(0, yoff+12, "Timescale: " + timescale, Color.cyan);
 		//font.drawString(0, 118, "info: " + Math.abs(translate_x-20) +","+ Math.abs(translate_x + WIDTH + 20), Color.yellow);
+		if(console.show){
+			for(int i=0; i<console.CSIZE; i++){
+				font.drawString(30, HEIGHT-(i*14)-14, console.prelog[i], console.precolor[i]);
+				font.drawString(80, HEIGHT-(i*14)-14, console.postlog[i], console.postcolor[i]);
+			}
+		}
 	}
 	
 	protected float distance(float x1, float y1, float x2, float y2){
@@ -775,11 +797,11 @@ public class GameCo {
 							Entitys.add(new Tree(xx,yy, "treeTrunk", 0));
 							treesInWorld++;
 							attempts=0;
-							System.out.println("Created tree at: " + xx + "," + yy);
+							console.addLog("Created tree at: " + xx + "," + yy);
 			        	} 
 						else { //If we failed to create the tree
 							attempts--;
-							System.out.println("Failed attempt at spawning tree..." + attempts);
+							console.addWarn("Failed attempt at spawning tree..." + attempts);
 						}
 					}
 				}//Failed or created, delete the tree that died.
@@ -788,7 +810,8 @@ public class GameCo {
 		}
 		e.lifetime++;
 	}
-	private Texture loadTexture(String key){
+	
+	public Texture loadTexture(String key){
 		try {
 			return TextureLoader.getTexture("PNG", new FileInputStream(new File("res/" + key + ".png")));
 			//return TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream("/res/" + key + ".png"));
