@@ -46,7 +46,7 @@ public class Window {
 	}
 
 	
-	public void render(float translate_x, float translate_y){
+	public void render(){
 		Color.white.bind();
         corner.bind(); // or GL11.glBind(texture.getTextureID());
 //        GL11.glPushMatrix();

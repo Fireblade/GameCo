@@ -91,7 +91,10 @@ public class GameCo {
 	
 	private long seconds=0;
 	
-	public Window wind;
+	public Window buyWind;
+	public boolean buymenu = false;
+	
+	public Window conWind;
 	protected Console console = new Console();
 	
 	public GameCo(){ //My initialization code
@@ -121,7 +124,8 @@ public class GameCo {
 		
 		BackgroundTex = loadTexture("grass");
 				
-		wind = new Window(50100, 50100, 800, 600, this);
+		conWind = new Window(100, 100, 800, 600, this);
+		buyWind = new Window(8, 180, 128, 256, this);
 		
 		gameLoop();
 	}
@@ -149,7 +153,8 @@ public class GameCo {
             	e.tick(); // effectively, due to tick
             	if(e instanceof Tree){
             		if(ticks%FPS==0) e.lifetime++;
-		        	if(e.lifetime%90==0){
+		        	//if(e.lifetime%90==0){ //Old way
+            		if(gen.nextInt(5000)==0){ //will grow more randomly and not all at the same time
 		        		growTree(e);
 		        	}
             	}
@@ -276,6 +281,11 @@ public class GameCo {
 			console.show=true;
 		}
 		else console.show=false;
+		if (Keyboard.isKeyDown(Keyboard.KEY_B)) {
+			buymenu=true;
+		}
+		else buymenu=false;
+		
 		
 		if (Keyboard.isKeyDown(Keyboard.KEY_COMMA)) {
 			timescale-=0.005;
@@ -405,15 +415,6 @@ public class GameCo {
 				Entitys.add(new WoodWall(xg,yg, "wall_v",0));
 				break;
 		}
-	}
-
-	private boolean canPlaceHere(int x, int y) {
-		for(int i=Entitys.size()-1; i>=0; i--) {
-        	Entity e = Entitys.get(i);
-        	
-        	if(e.x == x && e.y == y) return false;
-		}
-		return true;
 	}
 
 	private void fixScreen() {
@@ -598,10 +599,12 @@ public class GameCo {
 			glColor4f(1,1,1,1); //Visible
 		}
 		
-		wind.render(translate_x, translate_y);
 		
-		glPopMatrix();  
 		
+		glPopMatrix(); 
+		
+		if(console.show) conWind.render();
+		if(buymenu) buyWind.render();
 		
 		glEnable(GL_TEXTURE_2D);
 		//on-screen text 
@@ -620,8 +623,8 @@ public class GameCo {
 		//font.drawString(0, 118, "info: " + Math.abs(translate_x-20) +","+ Math.abs(translate_x + WIDTH + 20), Color.yellow);
 		if(console.show){
 			for(int i=0; i<console.CSIZE; i++){
-				font.drawString(30, HEIGHT-(i*14)-14, console.prelog[i], console.precolor[i]);
-				font.drawString(80, HEIGHT-(i*14)-14, console.postlog[i], console.postcolor[i]);
+				font.drawString(conWind.x+32, conWind.y+conWind.height-(i*14)-14, console.prelog[i], console.precolor[i]);
+				font.drawString(conWind.y+80, conWind.y+conWind.height-(i*14)-14, console.postlog[i], console.postcolor[i]);
 			}
 		}
 	}
