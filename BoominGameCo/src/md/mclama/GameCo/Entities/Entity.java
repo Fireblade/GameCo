@@ -18,8 +18,8 @@ public abstract class Entity {
 	
 	public float x;
 	public float y;
-	protected float hspeed;
-	protected float vspeed;
+	public float hspeed;
+	public float vspeed;
 	protected float speed=0.12f;
 	public int imgw;
 	public int imgh;
@@ -91,6 +91,8 @@ public abstract class Entity {
 		if(xc >= exl+1 && xc <= exr-1 && yd >= eyu+1 && yd <= eyd-1) return true;//BOT
 		if(xl >= exl+1 && xl <= exr-1 && yc >= eyu+1 && yc <= eyd-1) return true;//left
 		if(xr >= exl+1 && xr <= exr-1 && yc >= eyu+1 && yc <= eyd-1) return true;//right
+		
+		if(xc >= exl && xc <= exr-1 && yc >= eyu+1 && yc <= eyd-1) return true;//CENTER
 		
 		return false;
 	}

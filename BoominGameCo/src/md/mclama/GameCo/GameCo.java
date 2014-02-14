@@ -13,7 +13,7 @@ import java.util.Random;
 import md.mclama.GameCo.Entities.Entity;
 import md.mclama.GameCo.Entities.Player;
 import md.mclama.GameCo.Entities.Buildings.Buildings;
-import md.mclama.GameCo.Entities.Buildings.WoodWall;
+import md.mclama.GameCo.Entities.Buildings.SolidWall;
 import md.mclama.GameCo.Entities.Resources.Boulder;
 import md.mclama.GameCo.Entities.Resources.Stones;
 import md.mclama.GameCo.Entities.Resources.Tree;
@@ -154,7 +154,7 @@ public class GameCo {
             	if(e instanceof Tree){
             		if(ticks%FPS==0) e.lifetime++;
 		        	//if(e.lifetime%90==0){ //Old way
-            		if(gen.nextInt(5000)==0){ //will grow more randomly and not all at the same time
+            		if(gen.nextInt((int) (5000*timescale))==0){ //will grow more randomly and not all at the same time
 		        		growTree(e);
 		        	}
             	}
@@ -243,18 +243,18 @@ public class GameCo {
 
 	public void input(){
 		float speed=player.getSpeed();
-		if (Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) {
+		if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) {
 			speed*=2.5;
 		}
 		speed*=delta;
-		if (Keyboard.isKeyDown(Keyboard.KEY_LEFT)) {
+		if (Keyboard.isKeyDown(Keyboard.KEY_LEFT) || Keyboard.isKeyDown(Keyboard.KEY_A)) {
 			if(canMove(player.getX()+(-speed), player.getY())
 					|| !canMove(player.getX(), player.getY())){ //If we're already stuck, allow movement
 				player.setHspeed(-speed);
 				translate_x += speed;
 			}
 		}
-		else if (Keyboard.isKeyDown(Keyboard.KEY_RIGHT)) {
+		else if (Keyboard.isKeyDown(Keyboard.KEY_RIGHT) || Keyboard.isKeyDown(Keyboard.KEY_D)) {
 			if(canMove(player.getX()+speed, player.getY())
 				|| !canMove(player.getX(), player.getY())){ //If we're already stuck, allow movement
 				player.setHspeed(speed);
@@ -262,14 +262,14 @@ public class GameCo {
 			}
 		}
 		
-		if (Keyboard.isKeyDown(Keyboard.KEY_UP)) {
+		if (Keyboard.isKeyDown(Keyboard.KEY_UP) || Keyboard.isKeyDown(Keyboard.KEY_W)) {
 			if(canMove(player.getX(), player.getY()+(-speed))
 					|| !canMove(player.getX(), player.getY())){ //If we're already stuck, allow movement
 				player.setVspeed(-speed);
 				translate_y += speed;
 			}
 		}
-		else if (Keyboard.isKeyDown(Keyboard.KEY_DOWN)) {
+		else if (Keyboard.isKeyDown(Keyboard.KEY_DOWN) || Keyboard.isKeyDown(Keyboard.KEY_S)) {
 			if(canMove(player.getX(), player.getY()+speed)
 					|| !canMove(player.getX(), player.getY())){ //If we're already stuck, allow movement
 				player.setVspeed(speed);
@@ -326,9 +326,9 @@ public class GameCo {
 					//System.out.println("Hit object");
 				}
 			}
-			//System.out.println(xg+","+mx);
-			//System.out.println(yg+","+my);
-			if (canplace) Entitys.add(new WoodWall(xg,yg, "wall_v",0));
+			ding = Buildings.TWIGWALLV;
+			placeTex = loadTexture(ding.getTex());
+			if (canplace) Entitys.add(new SolidWall(xg, yg, ding));
 		}
 		if(Keyboard.isKeyDown(Keyboard.KEY_2)){
 			boolean canplace=true;
@@ -339,15 +339,13 @@ public class GameCo {
 					canplace=false;
 				}
 			}
-			if (canplace) Entitys.add(new WoodWall(xg,yg, "wall_h",1));
+			ding = Buildings.TWIGWALLH;
+			placeTex = loadTexture(ding.getTex());
+			if (canplace) Entitys.add(new SolidWall(xg, yg, ding));
 		}
 		if(Keyboard.isKeyDown(Keyboard.KEY_3)){
 			ding = Buildings.WOODWALLH;
 			placeTex = loadTexture(ding.getTex());
-			placew = ding.getImgx();
-			placeh = ding.getImgy();
-			placehx = ding.getHitx();
-			placehy = ding.getHity();
 			placing = true;
 		}
 		if(Keyboard.isKeyDown(Keyboard.KEY_4)){
@@ -409,10 +407,10 @@ public class GameCo {
 	private void placeDing() {
 		switch(ding){
 			case WOODWALLH:
-				Entitys.add(new WoodWall(xg,yg, "wall_h",1));
-				break;
 			case WOODWALLV:
-				Entitys.add(new WoodWall(xg,yg, "wall_v",0));
+			case TWIGWALLV:
+			case TWIGWALLH:
+				Entitys.add(new SolidWall(xg, yg, ding));
 				break;
 		}
 	}
@@ -430,6 +428,7 @@ public class GameCo {
 			}
 			else if (distance(x,y, e.x, e.y) <= max(e.hitx, e.hity)*2){ //Only check collision if we are within 2x of its hitbox area
 				if(player.inBounds((int) x,(int) y, (int) e.x, (int) e.y, e.imgw, e.imgh, e.hitx, e.hity)){
+				//if(player.hitbox.intersects(e.hitbox)){
 					if (e instanceof WoodPile){
 						invWood++;
 						Entitys.remove(e);
@@ -443,7 +442,7 @@ public class GameCo {
 					else if (e instanceof Boulder){
 						invStones++;
 						e.health--;
-						knockback(120);
+						knockback(12);
 						if(e.health <1){
 							Entitys.remove(e);
 							bouldersInWorld--;
@@ -453,7 +452,7 @@ public class GameCo {
 					else if (e instanceof Tree){
 						invWood+=2;
 						e.size--;
-						knockback(120);
+						knockback(12);
 						if(e.size <0){
 							Entitys.remove(e);
 							treesInWorld--;
@@ -473,22 +472,28 @@ public class GameCo {
 	
 
 	private void knockback(float power) {
-		if (Keyboard.isKeyDown(Keyboard.KEY_LEFT)) {
-			player.setHspeed(player.getSpeed()*power);
-			translate_x += -player.getSpeed()*power;
+		float speed=player.getSpeed();
+		if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) {
+			speed*=2.5;
 		}
-		else if (Keyboard.isKeyDown(Keyboard.KEY_RIGHT)) {
-			player.setHspeed(-player.getSpeed()*power);
-			translate_x += player.getSpeed()*power;
+		speed*=delta;
+		speed*=power;
+		if (Keyboard.isKeyDown(Keyboard.KEY_LEFT) || Keyboard.isKeyDown(Keyboard.KEY_A)) {
+			player.setHspeed(speed);
+			translate_x += -speed;
+		}
+		else if (Keyboard.isKeyDown(Keyboard.KEY_RIGHT) || Keyboard.isKeyDown(Keyboard.KEY_D)) {
+			player.setHspeed(-speed);
+			translate_x += speed;
 		}
 		
-		if (Keyboard.isKeyDown(Keyboard.KEY_UP)) {
-			player.setVspeed(player.getSpeed()*power);
-			translate_y += -player.getSpeed()*power;
+		if (Keyboard.isKeyDown(Keyboard.KEY_UP) || Keyboard.isKeyDown(Keyboard.KEY_W)) {
+			player.setVspeed(speed);
+			translate_y += -speed;
 		}
-		else if (Keyboard.isKeyDown(Keyboard.KEY_DOWN)) {
-			player.setVspeed(-player.getSpeed()*power);
-			translate_y += player.getSpeed()*power;
+		else if (Keyboard.isKeyDown(Keyboard.KEY_DOWN) || Keyboard.isKeyDown(Keyboard.KEY_S)) {
+			player.setVspeed(-speed);
+			translate_y += speed;
 		}
 		fixScreen();
 	}
@@ -761,8 +766,8 @@ public class GameCo {
 		int yu = (int) (y + (imgh/2) - (hity/2));
 		int yd = (int) (y + (imgh/2) + (hity/2));
 		//sides 
-		//int xc = (int) (x + (imgw/2)); //we are testing this one
-		//int yc = (int) (y + (imgh/2));
+		int xc = (int) (x + (imgw/2)); //we are testing this one
+		int yc = (int) (y + (imgh/2));
 		
    //      V               V           V              V
 		if(xl+1 >= exl && xl+1 <= exr && yu+1 >= eyu && yu+1 <= eyd) return true;//topleft
@@ -770,7 +775,7 @@ public class GameCo {
 		if(xl+1 >= exl && xl+1 <= exr && yd-1 >= eyu && yd-1 <= eyd) return true;//botleft
 		if(xr-1 >= exl && xr-1 <= exr && yd-1 >= eyu && yd-1 <= eyd) return true;//botright
 		//sides
-		//if(xc >= exl && xc <= exr-1 && yu >= eyu+1 && yu <= eyd-1) return true;//TOP
+		if(xc >= exl && xc <= exr-1 && yc >= eyu+1 && yc <= eyd-1) return true;//CENTER
 		//if(xc >= exl && xc <= exr-1 && yd >= eyu+1 && yd <= eyd-1) return true;//BOT
 		//if(xl >= exl && xl <= exr-1 && yc >= eyu+1 && yc <= eyd-1) return true;//left
 		//if(xr >= exl && xr <= exr-1 && yc >= eyu+1 && yc <= eyd-1) return true;//right\

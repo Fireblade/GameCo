@@ -11,6 +11,8 @@ public class Player extends Entity {
 		y += vspeed;
 		hspeed=0;
 		vspeed=0;
+		hitbox.x = (int) x;
+		hitbox.y = (int) y;
 	}
 
 }
