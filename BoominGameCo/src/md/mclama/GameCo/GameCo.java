@@ -14,6 +14,8 @@ import md.mclama.GameCo.Entities.Entity;
 import md.mclama.GameCo.Entities.Player;
 import md.mclama.GameCo.Entities.Buildings.Buildings;
 import md.mclama.GameCo.Entities.Buildings.SolidWall;
+import md.mclama.GameCo.Entities.NPC.NPC;
+import md.mclama.GameCo.Entities.NPC.NPClist;
 import md.mclama.GameCo.Entities.Resources.Boulder;
 import md.mclama.GameCo.Entities.Resources.Stones;
 import md.mclama.GameCo.Entities.Resources.Tree;
@@ -64,6 +66,7 @@ public class GameCo {
 	public float translate_x=-50000;
 	public float translate_y=-50000;
 	
+	NPClist npcl = NPClist.ANIMAL;
 	Buildings ding = Buildings.WOODWALLH;
 	private boolean placing = false;
 	private int placew, placeh, placehx, placehy;
@@ -104,6 +107,7 @@ public class GameCo {
 		
 		//player = new Player(440,256);
 		Entitys.add(player = new Player(50000+(WIDTH/2),50000+(HEIGHT/2)));
+		Entitys.add(new NPC(50500, 50500, npcl));
 		
 		for(int i=0; i<gen.nextInt(10)+15; i++){
 			Entitys.add(new WoodPile(gen.nextInt(WIDTH-16)+50008,gen.nextInt(HEIGHT-16)+50008, "WoodPile"));
@@ -158,10 +162,15 @@ public class GameCo {
 		        		growTree(e);
 		        	}
             	}
+            	if(e instanceof NPC){
+            		if(distance(player.x, player.y, e.x, e.y) > 30){
+            			((NPC) e).moveDir(player.x, player.y);
+            		}
+            		((NPC) e).tick(1);
+            	}
             }
             
-            render();
-            //System.out.println(delta);
+            
             ticks++;
             if(ticks%FPS==0) { //every second do this.
             	//System.out.println(ticks/FPS);
@@ -229,9 +238,10 @@ public class GameCo {
 //            	if(ticks % (int) (FPS*(90*timescale)) == 0) { //5 minutes
 //            		growTree();
 //            	}
-            }
+            }//end of every second
             
             updateFPS();
+            render();
             
             Display.update();
             Display.sync(FPS);
@@ -529,10 +539,18 @@ public class GameCo {
 		int stonecount=0;
 		int bouldercount=0;
 		int treecount=0;
+		int NPCcount=0;
 		for(Entity e : Entitys){
 			if (e instanceof Player){
 				//do nothing. render it ontop of everything.
 				e.render();
+			}
+			else if (e instanceof NPC){
+				NPCcount++;
+				((NPC) e).render(translate_x, translate_y);
+				if(onScreen(e)){
+					ents_on_screen++;
+				}
 			}
 			else if(onScreen(e)){
 				e.render();
@@ -550,6 +568,7 @@ public class GameCo {
 			else if (e instanceof Tree){
 				treecount++;
 			}
+			
 		}
 		//player.render();
 		
@@ -785,7 +804,7 @@ public class GameCo {
 	private void growTree(Entity e) {
 		e.size++; //The tree grew!! yay!
 		if(e.size > 10){
-			if(gen.nextInt(max(10-(e.size-10),1))==0 || e.size>=20){ //after the tree is size 10, chance to break
+			if(gen.nextInt(max((int) (10-(e.size-10)),1))==0 || e.size>=20){ //after the tree is size 10, chance to break
 				for(int j=0; j<gen.nextInt(2)+1; j++){
 					int attempts = 5; //atempts at spawning tree
 					while (attempts!=0){

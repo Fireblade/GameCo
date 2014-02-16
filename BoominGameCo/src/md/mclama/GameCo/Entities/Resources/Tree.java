@@ -17,7 +17,7 @@ public class Tree extends Entity {
 	private Texture tree;
 
 	public Tree(float x, float y, String tex, int size) {
-		super(x, y, tex, 8, 16, 8, 16, 0, size);
+		super(x, y, tex, 8, 16, 8, 16, 0, size, 0);
 		tree = loadTexture("tree");
 		//System.out.println("Size of tree: " + size);
 	}

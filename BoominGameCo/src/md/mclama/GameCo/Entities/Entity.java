@@ -30,14 +30,14 @@ public abstract class Entity {
 	public int maxHp = 0;
 	public int health=0;
 	
-	public int size;
+	public float size;
 	
 	protected Texture texture;
 	public long lifetime=1;
 	
 	public Rectangle hitbox = new Rectangle();
 	
-	public Entity(float x, float y, String tex, int displayx, int displayy, int hitx, int hity, int health, int size){
+	public Entity(float x, float y, String tex, int displayx, int displayy, int hitx, int hity, int health, float size, float speed){
 		this.x=x;
 		this.y=y;
 		this.hitx=hitx;
@@ -48,6 +48,7 @@ public abstract class Entity {
 		this.health = health;
 		maxHp = health;
 		this.size = size;
+		this.speed = speed;
 		//System.out.println(imgw + "," + imgh);
 		
 		hitbox.x = (int) x;
@@ -100,17 +101,18 @@ public abstract class Entity {
 
 	public void render(){
 		
-		
-		//glTranslatef(x ,y , 0); // move to the proper position
-		//glRotatef( 0.25f, 0, 0, 1 ); // now rotate
-		//glBindTexture(GL_TEXTURE_2D,texture.getTextureID()); //doesnt work?! use texture.bind();
 		//glPushMatrix();
+		//glTranslatef(texture.getTextureWidth()/2 ,texture.getTextureHeight()/2 , 0); // move to the proper position
+		//glRotatef( 0.25f, 0, 0, 1 ); // now rotate
+		//glTranslatef(-(texture.getTextureWidth()/2) ,-(texture.getTextureHeight()/2) , 0);
+		//glBindTexture(GL_TEXTURE_2D,texture.getTextureID()); //doesnt work?! use texture.bind();
+		
 		texture.bind();
 		glColor3f(1,1,1); //White
 		glBegin(GL_QUADS);
 			glTexCoord2f(0,0);
 			glVertex2f(x,y);
-			glTexCoord2f(0.98f,0);
+			glTexCoord2f(1f,0);
 			glVertex2f(x+texture.getTextureWidth(),y);
 			glTexCoord2f(1,1);
 			glVertex2f(x+texture.getTextureWidth(),y+texture.getTextureHeight());

@@ -7,7 +7,7 @@ public class SolidWall extends Entity {
 	//public SolidWall(float x, float y, String tex, int imgx, int imgy, int hitx, int hity, int health) {
 	public SolidWall(float x, float y, Buildings ding) {	
 		//ding.getImgx(), ding.getImgx(), ding.getHitx(), ding.getHity(), ding.getHealth()
-		super(x, y, ding.getTex(), ding.getImgx(), ding.getImgy(), ding.getHitx(), ding.getHity(), ding.getHealth(), 0);
+		super(x, y, ding.getTex(), ding.getImgx(), ding.getImgy(), ding.getHitx(), ding.getHity(), ding.getHealth(), 0, 0);
 	}
 
 	

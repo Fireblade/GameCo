@@ -3,7 +3,7 @@ package md.mclama.GameCo.Entities;
 public class Player extends Entity {
 
 	public Player(int x, int y) {
-		super(x,y,"water", 16, 16, 16, 16, 100, 0);
+		super(x,y,"water", 16, 16, 16, 16, 100, 0, 0.12f);
 	}
 	
 	public void tick(){
