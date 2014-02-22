@@ -22,6 +22,7 @@ public class Console {
 			precolor[i] = Color.green;
 			postcolor[i] = Color.cyan;
 		}
+		addInfo("Console Loaded");
 	}
 	
 	public void scroll(){
@@ -41,6 +42,16 @@ public class Console {
 		postcolor[0] = Color.cyan;
 		
 		System.out.println("[log] " + text);
+	}
+	
+	public void addInfo(String text){
+		scroll();
+		prelog[0] = "[Info] ";
+		postlog[0] = text;
+		precolor[0] = Color.yellow;
+		postcolor[0] = Color.cyan;
+		
+		System.out.println("[Info] " + text);
 	}
 	
 	public void addWarn(String text){
