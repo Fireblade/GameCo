@@ -105,37 +105,23 @@ public class GameCo {
 		initFont();
 		lastFPS = getTime();
 		
-		//player = new Player(440,256);
-		Entitys.add(player = new Player(50000+(WIDTH/2),50000+(HEIGHT/2)));
-		Entitys.add(new NPC(50500, 50500, npcl));
-		
-		for(int i=0; i<gen.nextInt(10)+15; i++){
-			Entitys.add(new WoodPile(gen.nextInt(WIDTH-16)+50008,gen.nextInt(HEIGHT-16)+50008, "WoodPile"));
-			woodInWorld++;
-		}
-		for(int i=0; i<gen.nextInt(5)+5; i++){
-			Entitys.add(new Stones(gen.nextInt(WIDTH-16)+50008,gen.nextInt(HEIGHT-16)+50008, "Stones"));
-			woodInWorld++;
-		}
-		for(int i=0; i<gen.nextInt(5)+5; i++){
-			Entitys.add(new Boulder(gen.nextInt(WIDTH-16)+50008,gen.nextInt(HEIGHT-16)+50008, "Boulder"));
-			bouldersInWorld++;
-		}
-		for(int i=0; i<gen.nextInt(30)+2; i++){
-			Entitys.add(new Tree(gen.nextInt(6000)+47000,gen.nextInt(6000)+47000, "treeTrunk", gen.nextInt(8)+2));
-			treesInWorld++;
-		}
+		//if(gamesave = found) loadgame; else newGame();
+		newGame();
 		
 		BackgroundTex = loadTexture("grass");
 				
 		conWind = new Window(100, 100, 800, 600, this);
 		buyWind = new Window(8, 180, 128, 256, this);
 		
-		gameLoop();
-	}
-	
-	private void gameLoop() {
+		//gameLoop();
 		while (!Display.isCloseRequested()){
+			gameLoop();
+		}
+		Display.destroy();
+        AL.destroy();
+        System.exit(0);
+	}
+	private void gameLoop() {
             glClear(GL_COLOR_BUFFER_BIT);
             //Clear the buffer before we start
             
@@ -163,9 +149,33 @@ public class GameCo {
 		        	}
             	}
             	if(e instanceof NPC){
-            		if(distance(player.x, player.y, e.x, e.y) > 30){
-            			((NPC) e).moveDir(player.x, player.y);
-            		}
+            		if(((NPC) e).hostile){
+	            		if(distance(player.x, player.y, e.x, e.y) > 30){
+	            			((NPC) e).moveDir(player.x, player.y);
+	            			((NPC) e).attacking = true;
+	            		}
+            		}else { //passive NPC.
+	            		boolean canmove=true; //allow moving until we find a reason not to.
+	            		for(int i1=Entitys.size()-1; i1>=0; i1--) {
+	                    	Entity e1 = Entitys.get(i1);
+	                    	//if(e.inBounds((int) e.x+(int) (e.hspeed*(delta*e.speed)),(int) e.y+(int) (e.vspeed*(delta*e.speed)), (int) e1.x, (int) e1.y, e1.imgw, e1.imgh, e1.hitx, e1.hity)){
+//	                    	if(e.inBounds(e.x+(e.hspeed*(delta*e.speed)),e.y+(e.vspeed*(delta*e.speed)), e1)){
+//	                    		canmove=false;
+//	                    		i=0;
+//	                    	} //bounds disabled because it causes teleporting instead of moving
+	            		}
+	            		if(canmove){ //if we can move
+	            			int range = 700; //Range of our leash for the animal
+	            			if(distance(((NPC) e).spawnx, ((NPC) e).spawny, e.x + (e.hspeed*(delta*e.speed)), e.y + (e.vspeed*(delta*e.speed))) <= range){
+		            			e.x += (e.hspeed*(delta*e.speed));
+		            			e.y += (e.vspeed*(delta*e.speed));
+		            			//e.setX(e.getX() + (e.hspeed*(e.speed*delta)));
+		            			//e.y += (e.vspeed*(e.speed*delta));
+		            			//e.setY(e.getY() + (e.vspeed*(e.speed*delta)));
+	            			}
+	            			//else {System.out.println("hit leash limit");}
+	            		}
+            		} //end of passive NPC
             		((NPC) e).tick(1);
             	}
             }
@@ -245,10 +255,6 @@ public class GameCo {
             
             Display.update();
             Display.sync(FPS);
-        }
-        Display.destroy();
-        AL.destroy();
-        System.exit(0);
 	}
 
 	public void input(){
@@ -643,12 +649,13 @@ public class GameCo {
 		int xoff = WIDTH-112;
 		int yoff = HEIGHT-112;
 		font.drawString(0, yoff, "Entities: " + Entitys.size() + " On Screen: " + ents_on_screen, Color.cyan);
-		font.drawString(0, yoff+12, "Timescale: " + timescale, Color.cyan);
+		font.drawString(0, yoff+12, "NPC's: " + NPCcount, Color.cyan);
+		font.drawString(0, yoff+24, "Timescale: " + timescale, Color.cyan);
 		//font.drawString(0, 118, "info: " + Math.abs(translate_x-20) +","+ Math.abs(translate_x + WIDTH + 20), Color.yellow);
 		if(console.show){
 			for(int i=0; i<console.CSIZE; i++){
 				font.drawString(conWind.x+32, conWind.y+conWind.height-(i*14)-14, console.prelog[i], console.precolor[i]);
-				font.drawString(conWind.y+80, conWind.y+conWind.height-(i*14)-14, console.postlog[i], console.postcolor[i]);
+				font.drawString(conWind.x+96, conWind.y+conWind.height-(i*14)-14, console.postlog[i], console.postcolor[i]);
 			}
 		}
 	}
@@ -799,6 +806,29 @@ public class GameCo {
 		//if(xl >= exl && xl <= exr-1 && yc >= eyu+1 && yc <= eyd-1) return true;//left
 		//if(xr >= exl && xr <= exr-1 && yc >= eyu+1 && yc <= eyd-1) return true;//right\
 		return false;
+	}
+	
+	private void newGame(){
+		Entitys.add(player = new Player(50000+(WIDTH/2),50000+(HEIGHT/2)));
+		Entitys.add(new NPC(50500, 50500, npcl));
+		
+		for(int i=0; i<gen.nextInt(10)+15; i++){
+			Entitys.add(new WoodPile(gen.nextInt(WIDTH-16)+50008,gen.nextInt(HEIGHT-16)+50008, "WoodPile"));
+			woodInWorld++;
+		}
+		for(int i=0; i<gen.nextInt(5)+5; i++){
+			Entitys.add(new Stones(gen.nextInt(WIDTH-16)+50008,gen.nextInt(HEIGHT-16)+50008, "Stones"));
+			woodInWorld++;
+		}
+		for(int i=0; i<gen.nextInt(5)+5; i++){
+			Entitys.add(new Boulder(gen.nextInt(WIDTH-16)+50008,gen.nextInt(HEIGHT-16)+50008, "Boulder"));
+			bouldersInWorld++;
+		}
+		for(int i=0; i<gen.nextInt(30)+2; i++){
+			Entitys.add(new Tree(gen.nextInt(6000)+47000,gen.nextInt(6000)+47000, "treeTrunk", gen.nextInt(8)+2));
+			treesInWorld++;
+		}
+		console.addInfo("New game loaded");
 	}
 	
 	private void growTree(Entity e) {

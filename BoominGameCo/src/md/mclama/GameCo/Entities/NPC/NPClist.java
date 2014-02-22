@@ -1,7 +1,7 @@
 package md.mclama.GameCo.Entities.NPC;
 
 public enum NPClist {
-	ANIMAL("wall_h", 16, 16, 16, 16, 40, 1, 0.11f, false);
+	ANIMAL("wall_h", 16, 16, 16, 16, 40, 1, 0.07f, false);
 
 
 	private String tex;

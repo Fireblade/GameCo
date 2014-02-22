@@ -20,7 +20,7 @@ public abstract class Entity {
 	public float y;
 	public float hspeed;
 	public float vspeed;
-	protected float speed=0.12f;
+	public float speed=0.12f;
 	public int imgw;
 	public int imgh;
 	//public int displayx, displayy;
@@ -82,6 +82,35 @@ public abstract class Entity {
 //		if(xr >= exl+1 && xr <= exr-1 && yu >= eyu+1 && yu <= eyd-1) return true;//topright
 //		if(xl >= exl+1 && xl <= exr-1 && yd >= eyu+1 && yd <= eyd-1) return true;//botleft
 //		if(xr >= exl+1 && xr <= exr-1 && yd >= eyu+1 && yd <= eyd-1) return true;//botright
+		
+		if(xl+1 >= exl && xl+1 <= exr && yu+1 >= eyu && yu+1 <= eyd) return true;//topleft
+		if(xr-1 >= exl && xr-1 <= exr && yu+1 >= eyu && yu+1 <= eyd) return true;//topright
+		if(xl+1 >= exl && xl+1 <= exr && yd-1 >= eyu && yd-1 <= eyd) return true;//botleft
+		if(xr-1 >= exl && xr-1 <= exr && yd-1 >= eyu && yd-1 <= eyd) return true;//botright
+		//sides
+		if(xc >= exl+1 && xc <= exr-1 && yu >= eyu+1 && yu <= eyd-1) return true;//TOP
+		if(xc >= exl+1 && xc <= exr-1 && yd >= eyu+1 && yd <= eyd-1) return true;//BOT
+		if(xl >= exl+1 && xl <= exr-1 && yc >= eyu+1 && yc <= eyd-1) return true;//left
+		if(xr >= exl+1 && xr <= exr-1 && yc >= eyu+1 && yc <= eyd-1) return true;//right
+		
+		if(xc >= exl && xc <= exr-1 && yc >= eyu+1 && yc <= eyd-1) return true;//CENTER
+		
+		return false;
+	}
+	
+	public boolean inBounds(float x, float y, Entity e){
+		float exl = e.x + (e.imgw/2) - (e.hitx/2); //against this
+		float exr = e.x + (e.imgw/2) + (e.hitx/2);
+		float eyu = e.y + (e.imgh/2) - (e.hity/2);
+		float eyd = e.y + (e.imgh/2) + (e.hity/2);
+		
+		float xl = (x + (imgw/2) - (hitx/2)); //we are testing this one
+		float xr = (x + (imgw/2) + (hitx/2));
+		float yu = (y + (imgh/2) - (hity/2));
+		float yd = (y + (imgh/2) + (hity/2));
+		//sides 
+		float xc = (x + (imgw/2)); //we are testing this one
+		float yc = (y + (imgh/2));
 		
 		if(xl+1 >= exl && xl+1 <= exr && yu+1 >= eyu && yu+1 <= eyd) return true;//topleft
 		if(xr-1 >= exl && xr-1 <= exr && yu+1 >= eyu && yu+1 <= eyd) return true;//topright
