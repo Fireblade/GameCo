@@ -140,17 +140,15 @@ public class GameCo {
             
             for(int i=Entitys.size()-1; i>=0; i--) {
             	Entity e = Entitys.get(i);
-            	e.tick(); // effectively, due to tick
             	if(e instanceof Tree){
             		if(ticks%FPS==0) e.lifetime++;
-		        	//if(e.lifetime%90==0){ //Old way
             		if(gen.nextInt((int) (5000*timescale))==0){ //will grow more randomly and not all at the same time
 		        		growTree(e);
 		        	}
             	}
             	if(e instanceof NPC){
             		if(((NPC) e).hostile){
-	            		if(distance(player.x, player.y, e.x, e.y) > 30){
+	            		if(distance(player, e) > 30){
 	            			((NPC) e).moveDir(player.x, player.y);
 	            			((NPC) e).attacking = true;
 	            		}
@@ -177,7 +175,8 @@ public class GameCo {
 	            		}
             		} //end of passive NPC
             		((NPC) e).tick(1);
-            	}
+            	}//end of checking instance's
+            	e.tick();
             }
             
             
@@ -245,9 +244,6 @@ public class GameCo {
 	            		}
             		}
             	}
-//            	if(ticks % (int) (FPS*(90*timescale)) == 0) { //5 minutes
-//            		growTree();
-//            	}
             }//end of every second
             
             updateFPS();
@@ -313,24 +309,12 @@ public class GameCo {
 		
 		while (Keyboard.next()) {
 			
-			
-			
-			
 			if(Keyboard.getEventKeyState()){ //PRESSED
 				if (Keyboard.isKeyDown(Keyboard.KEY_SPACE)) {
-					fixScreen();
+					centerOnPlayer();
 				}
 			}
 		}
-
-		
-//		if (Keyboard.isKeyDown(Keyboard.KEY_SPACE)
-//                && Mouse.getX() > 0 && Mouse.getX() < (WIDTH-1)) {
-//			        translate_x += Mouse.getDX();
-//			        translate_y -= Mouse.getDY();    
-//		}
-//		mx = Mouse.getX()+1 - translate_x;
-//        my = HEIGHT - Mouse.getY()-1 - translate_y;
 		
 		if(Keyboard.isKeyDown(Keyboard.KEY_1)){
 			boolean canplace=true; //We can spawn it before we try
@@ -431,7 +415,7 @@ public class GameCo {
 		}
 	}
 
-	private void fixScreen() {
+	private void centerOnPlayer() {
 		translate_x = -(player.x - (WIDTH/2));
 		translate_y = -(player.y - (HEIGHT/2));
 	}
@@ -442,7 +426,7 @@ public class GameCo {
         	
 			if (e instanceof Player){
 			}
-			else if (distance(x,y, e.x, e.y) <= max(e.hitx, e.hity)*2){ //Only check collision if we are within 2x of its hitbox area
+			else if (distance(x,y, e.x+(e.imgw/2), e.y+(e.imgh/2)) <= max(e.hitx, e.hity)*1.5){ //Only check collision if we are within 2x of its hitbox area
 				if(player.inBounds((int) x,(int) y, (int) e.x, (int) e.y, e.imgw, e.imgh, e.hitx, e.hity)){
 				//if(player.hitbox.intersects(e.hitbox)){
 					if (e instanceof WoodPile){
@@ -511,7 +495,7 @@ public class GameCo {
 			player.setVspeed(-speed);
 			translate_y += speed;
 		}
-		fixScreen();
+		centerOnPlayer();
 	}
 
 	public void render(){
@@ -561,6 +545,10 @@ public class GameCo {
 			else if(onScreen(e)){
 				e.render();
 				ents_on_screen++;
+				
+				if (e instanceof Tree){
+					treecount++;
+				}
 			}
 			if (e instanceof WoodPile){
 				woodcount++;
@@ -570,9 +558,6 @@ public class GameCo {
 			}
 			else if (e instanceof Boulder){
 				bouldercount++;
-			}
-			else if (e instanceof Tree){
-				treecount++;
 			}
 			
 		}
@@ -645,7 +630,7 @@ public class GameCo {
 		font.drawString(0, 82, "Wood: " + woodcount + ", in Hand: " + invWood, Color.yellow);
 		font.drawString(0, 94, "Stones: " + stonecount + ", in Hand: " + invStones, Color.yellow);
 		font.drawString(0, 106, "Boulders: " + bouldercount, Color.yellow);
-		font.drawString(0, 118, "Trees: " + treecount, Color.yellow);
+		font.drawString(0, 118, "Trees in world: " + treesInWorld + " on Screen: " + treecount, Color.yellow);
 		int xoff = WIDTH-112;
 		int yoff = HEIGHT-112;
 		font.drawString(0, yoff, "Entities: " + Entitys.size() + " On Screen: " + ents_on_screen, Color.cyan);
@@ -661,6 +646,14 @@ public class GameCo {
 	}
 	
 	protected float distance(float x1, float y1, float x2, float y2){
+		return (float) Math.sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2));
+	}
+	
+	protected float distance(Entity e1, Entity e2){
+		float x1 = e1.x + (e1.imgw/2);
+		float y1 = e1.y + (e1.imgh/2);
+		float x2 = e2.x + (e2.imgw/2);
+		float y2 = e2.y + (e2.imgh/2);
 		return (float) Math.sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2));
 	}
 	
@@ -835,34 +828,37 @@ public class GameCo {
 		e.size++; //The tree grew!! yay!
 		if(e.size > 10){
 			if(gen.nextInt(max((int) (10-(e.size-10)),1))==0 || e.size>=20){ //after the tree is size 10, chance to break
-				for(int j=0; j<gen.nextInt(2)+1; j++){
-					int attempts = 5; //atempts at spawning tree
-					while (attempts!=0){
-						boolean createTree = true;
-						int range=250; //range of spawning tree
-						float xx=e.x-(range/2) + gen.nextInt(range); //set area around previous tree
-						float yy=e.y-(range/2) + gen.nextInt(range);
-						for(int k=Entitys.size()-1; k>=0; k--) { //check every other tree
-				        	Entity e1 = Entitys.get(k);
-				        	if (e1 instanceof Tree){ //check every other tree
-        						if(distance(xx, yy, e1.x, e1.y) <= 35){ 
-        							createTree = false; //if too close, dont create tree.
-        						}
-    						}
-			        	}//Once we're done checking all the other tree's
-						if(createTree){
-							Entitys.add(new Tree(xx,yy, "treeTrunk", 0));
-							treesInWorld++;
-							attempts=0;
-							console.addLog("Created tree at: " + xx + "," + yy);
-			        	} 
-						else { //If we failed to create the tree
-							attempts--;
-							console.addWarn("Failed attempt at spawning tree..." + attempts);
+				if(treesInWorld<=10000){ //trees still grow and die from age, but no new trees created.
+					for(int j=0; j<gen.nextInt(2)+1; j++){
+						int attempts = 5; //atempts at spawning tree
+						while (attempts!=0){
+							boolean createTree = true;
+							int range=250; //range of spawning tree
+							float xx=e.x-(range/2) + gen.nextInt(range); //set area around previous tree
+							float yy=e.y-(range/2) + gen.nextInt(range);
+							for(int k=Entitys.size()-1; k>=0; k--) { //check every other tree
+					        	Entity e1 = Entitys.get(k);
+					        	if (e1 instanceof Tree){ //check every other tree
+	        						if(distance(xx, yy, e1.x, e1.y) <= 35){ 
+	        							createTree = false; //if too close, dont create tree.
+	        						}
+	    						}
+				        	}//Once we're done checking all the other tree's
+							if(createTree){
+								Entitys.add(new Tree(xx,yy, "treeTrunk", 0));
+								treesInWorld++;
+								attempts=0;
+								console.addLog("Created tree at: " + xx + "," + yy);
+				        	} 
+							else { //If we failed to create the tree
+								attempts--;
+								console.addWarn("Failed attempt at spawning tree..." + attempts);
+							}
 						}
-					}
-				}//Failed or created, delete the tree that died.
+					}//Failed or created, delete the tree that died.
+				}
 				Entitys.remove(e);
+				treesInWorld--;
 			}
 		}
 		e.lifetime++;
